@@ -4,7 +4,9 @@ Members: Silvestar Bratincevic, Marijo Gajsak, Mihaela Bolt
 
 Administrator Features:
 → User login and verification
+
 → Approval of every advertisement
+
 → Access ban (for all users who have many reports or violate group rules)
 → Rules modification (application contains rules that users must follow)
 → Advertisement deletion (removes sold ads from the page so they don't appear in search and filtering, but they remain in the database)
