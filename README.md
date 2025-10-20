@@ -1,5 +1,7 @@
 Student Marketplace Application
 
+Split University Public Item Depot
+
 Members: Silvestar Bratincevic, Marijo Gajsak, Mihaela Bolt
 
 Administrator Features:
