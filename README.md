@@ -4,8 +4,6 @@ Members: Silvestar Bratincevic, Marijo Gajsak, Mihaela Bolt
 
 Administrator Features:
 
-→ User login and verification
-
 → Approval of every advertisement
 
 → Access ban (for all users who have many reports or violate group rules)
@@ -23,6 +21,8 @@ Advertisement Categories:
 → Seeking (e.g., looking for Mathematics 2 book)
 
 User Services:
+
+→ User login and verification
 
 → DM chat between buyer/seller
 
@@ -45,6 +45,8 @@ Advanced Features:
 → Written marketplace rules stating that if you have too many negative comments, the administrator can ban your access
 
 → Badge/label for good seller/donor or bad seller/donor
+
+
 
 <img width="1525" height="833" alt="image" src="https://github.com/user-attachments/assets/2276474e-e35a-44bb-a8d1-9e88c3a0275a" />
 
