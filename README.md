@@ -46,6 +46,6 @@ Advanced Features:
 
 → Badge/label for good seller/donor or bad seller/donor
 
-<img width="1517" height="842" alt="image" src="https://github.com/user-attachments/assets/9b88b90a-1d04-430c-9e9a-56d5a5bb5334" />
+<img width="1525" height="833" alt="image" src="https://github.com/user-attachments/assets/2276474e-e35a-44bb-a8d1-9e88c3a0275a" />
 
 
