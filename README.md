@@ -50,6 +50,7 @@ Advanced Features:
 
 
 
-<img width="1525" height="833" alt="image" src="https://github.com/user-attachments/assets/2276474e-e35a-44bb-a8d1-9e88c3a0275a" />
+<img width="851" height="645" alt="image" src="https://github.com/user-attachments/assets/241ed200-9fbf-42d2-9f42-f85ca219436d" />
+
 
 
