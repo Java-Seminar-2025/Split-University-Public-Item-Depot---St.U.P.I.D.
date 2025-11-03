@@ -49,6 +49,7 @@ CREATE TABLE users (
                        Id BIGINT IDENTITY(1,1) PRIMARY KEY,
                        name NVARCHAR(255) NOT NULL,
                        lastName NVARCHAR(255) NOT NULL,
+                       username NVARCHAR(50) NOT NULL,
                        email NVARCHAR(255) NOT NULL,
                        password NVARCHAR(500) NOT NULL,
                        age INT NOT NULL,
@@ -62,6 +63,7 @@ CREATE TABLE users (
                        gender NVARCHAR(10),
                        courseid BIGINT,
                        CONSTRAINT UQ_User_Email UNIQUE (email),
+                       CONSTRAINT UQ_User_Username UNIQUE (username),
                        CONSTRAINT FK_User_Course FOREIGN KEY (courseid)
                            REFERENCES courses(Id) ON DELETE SET NULL,
                        CONSTRAINT CHK_User_Role CHECK (role IN ('ADMIN', 'STUDENT', 'QUESST')),
@@ -70,6 +72,7 @@ CREATE TABLE users (
 GO
 
 CREATE INDEX IDX_User_Email ON users(email);
+CREATE INDEX IDX_User_Username ON users(username);
 CREATE INDEX IDX_User_Course ON users(courseid);
 CREATE INDEX IDX_User_Role ON users(role);
 GO
@@ -202,4 +205,3 @@ CREATE INDEX IDX_FavoritePost_User ON favoritePosts([user]);
 CREATE INDEX IDX_FavoritePost_Post ON favoritePosts(adid);
 CREATE UNIQUE INDEX UQ_FavoritePost_User_Post ON favoritePosts([user], adid);
 GO
-
