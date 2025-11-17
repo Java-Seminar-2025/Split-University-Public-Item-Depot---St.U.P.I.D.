@@ -32,7 +32,7 @@ public class User {
     private String reputation;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.STUDENT;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;

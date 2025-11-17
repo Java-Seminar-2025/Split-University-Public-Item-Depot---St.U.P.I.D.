@@ -1,4 +1,4 @@
-package com.StudenMarket.StUPID.Controler;
+package com.StudenMarket.StUPID.Controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

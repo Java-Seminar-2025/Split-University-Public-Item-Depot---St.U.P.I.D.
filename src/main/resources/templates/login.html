@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Student Marketplace</title>
+    <link rel="stylesheet" th:href="@{/css/login-signup.css}">
+</head>
+<body>
+<div class="register-container">
+    <h1>LOGIN</h1>
+
+    <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/users/login}" th:object="${user}" method="post">
+
+        <div class="input-group">
+            <label for="usernameOrEmail">EMAIL OR USERNAME</label>
+            <input type="text" id="usernameOrEmail" name="usernameOrEmail" placeholder="your@email.com" required>
+        </div>
+
+        <div class="input-group">
+            <label for="password">PASSWORD</label>
+            <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+
+
+        <button type="submit">LOGIN</button>
+    </form>
+</div>
+</body>
+</html>

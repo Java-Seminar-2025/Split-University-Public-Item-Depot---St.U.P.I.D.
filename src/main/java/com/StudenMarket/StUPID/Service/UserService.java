@@ -2,62 +2,73 @@ package com.StudenMarket.StUPID.Service;
 
 import com.StudenMarket.StUPID.Entity.User;
 import com.StudenMarket.StUPID.Repository.UserRepository;
+import com.StudenMarket.StUPID.Exception.AppException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import java.lang.RuntimeException;
+
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
 
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-        return email.matches(emailRegex);
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*\\d).{6,}$";
+
+    private void validateEmail(String email) {
+        Optional.ofNullable(email)
+                .filter(e -> e.matches(EMAIL_REGEX))
+                .orElseThrow(() -> new AppException("Invalid email format"));
+
+        if (userRepository.existsByEmail(email)) {
+            throw new AppException("Email already exists!");
+        }
     }
 
-    private boolean isValidPassword(String password) {
-        String passwordRegex = "^(?=.*[A-Z])(?=.*\\d).{6,}$";
-
-        return password.matches(passwordRegex);
+    private void validateUsername(String username) {
+        Optional.ofNullable(username)
+                .filter(u -> !userRepository.existsByUsername(u))  // ← Ovo treba vratiti TRUE da prođe
+                .orElseThrow(() -> new AppException("Username already exists!"));
     }
 
-
-    public User registerUser(User user){
-
-        if(!isValidEmail(user.getEmail())){
-            throw new RuntimeException("Invalid email");
+    private void validateAge(int age) {
+        if (age < 16 || age > 40) {
+            throw new AppException("Age must be between 16 and 40!");
         }
-        if(userRepository.existsByEmail(user.getEmail())){
-            throw new RuntimeException("Email Already Exists!");
-        }
-        if(userRepository.existsByUsername(user.getUsername())){
-            throw new RuntimeException("Username Already Exists!");
-        }
-        if(user.getAge() < 16 || user.getAge() > 40){
-            throw new RuntimeException("Age must be between 16 and 40!");
-        }
-        if(user.getPassword() == null || !isValidPassword(user.getPassword())){
-            throw new RuntimeException("Password must contain at least one uppercase letter," +
-                    "must contain at least one number, and must contain at least 6 characters!");
-        }
-
-        String encryptedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
-
-        userRepository.save(user);
-        return user;
     }
 
-    public User userLogin(User user){
-        if(userRepository.findByUsernameOrEmail(user.getUsername(), user.getEmail()) == null){
-            throw new RuntimeException("Username or Email Doesn't Exist!");
-        }
-        return user;
+    private void validatePhoneNumber(int phoneNumber) {
+        String phoneStr = String.valueOf(phoneNumber);
+
+        Optional.of(phoneStr)
+                .filter(p -> p.length() >= 9 && p.length() <= 15)
+                .orElseThrow(() -> new AppException("Phone number must be between 9 and 15 digits!"));
     }
 
 
+    private void validatePassword(String password) {
+        Optional.ofNullable(password)
+                .filter(p -> p.matches(PASSWORD_REGEX))
+                .orElseThrow(() -> new AppException(
+                        "Password must contain at least one uppercase letter, " +
+                                "at least one number, and at least 6 characters!"
+                ));
+    }
+
+    public User userRegister(User user) {
+        validateEmail(user.getEmail());
+        validateUsername(user.getUsername());
+        validateAge(user.getAge());
+        validatePassword(user.getPassword());
+        validatePhoneNumber(user.getPhoneNumber());
+
+        return userRepository.save(user);
+    }
+
+    public User userLogin(String usernameOrEmail) {
+        return userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new AppException("Username or Email doesn't exist!"));
+    }
 }
