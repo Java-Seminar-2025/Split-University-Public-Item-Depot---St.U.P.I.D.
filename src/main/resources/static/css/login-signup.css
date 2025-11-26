@@ -32,6 +32,10 @@ body {
     border-radius: 12px;
 }
 
+.error-message {
+    color: red;
+}
+
 .login-container::before {
     content: '';
     position: absolute;

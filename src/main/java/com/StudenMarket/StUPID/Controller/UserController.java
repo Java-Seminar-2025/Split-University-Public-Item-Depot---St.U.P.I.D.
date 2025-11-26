@@ -1,7 +1,10 @@
 package com.StudenMarket.StUPID.Controller;
 
+import com.StudenMarket.StUPID.Entity.University;
 import com.StudenMarket.StUPID.Entity.User;
-import com.StudenMarket.StUPID.Service.UserService;
+import com.StudenMarket.StUPID.Repository.CourseRepository;
+import com.StudenMarket.StUPID.Repository.UniversityRepository;
+import com.StudenMarket.StUPID.Service.*;
 import com.StudenMarket.StUPID.Exception.AppException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.function.*;
 
 @Controller
@@ -19,6 +23,10 @@ public class UserController {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private CourseService courseService;
+    @Autowired
+    private UniversityService universityService;
 
     private Function<String, String> hashPassword()
     {
@@ -44,6 +52,8 @@ public class UserController {
 
     @GetMapping("/login")
     public String showLoginForm(Model model) {
+        List<University> universities = universityService.listAllUniversity();
+        model.addAttribute("universities", universities);
         addEmptyUser.accept(model);
         return "login";
     }
@@ -67,7 +77,6 @@ public class UserController {
             @RequestParam String password,
             Model model)
     {
-
         try {
             User user = userService.userLogin(usernameOrEmail);
 
