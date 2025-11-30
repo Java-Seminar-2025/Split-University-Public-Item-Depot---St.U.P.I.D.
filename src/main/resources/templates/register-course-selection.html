@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Your Course</title>
+    <link rel="stylesheet" th:href="@{/css/login-signup.css}">
+</head>
+<body>
+<div class="login-container">
+    <h1>Select Your Course</h1>
+
+    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
+
+    <form th:action="@{/users/complete-registration}" method="post">
+        <div class="course-selection">
+            <div class="course-option" th:each="course : ${courses}">
+                <input type="radio"
+                       th:id="${'course' + course.id}"
+                       th:value="${course.id}"
+                       name="courseId"
+                       required>
+                <label th:for="${'course' + course.id}"
+                       th:text="${course.courseName}">
+                </label>
+            </div>
+        </div>
+
+        <button type="submit">SIGN UP</button>
+    </form>
+</div>
+</body>
+</html>

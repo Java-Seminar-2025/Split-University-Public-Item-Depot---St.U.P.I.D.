@@ -2,17 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Register - Student Marketplace</title>
+    <title>Register - First Step</title>
     <link rel="stylesheet" th:href="@{/css/login-signup.css}">
 </head>
 <body>
 <div class="register-container">
-    <h1>REGISTER</h1>
+    <h1>SIGN UP</h1>
 
-    <div class="error-message" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div th:if="${errorMessage}" class="error-message" th:text="${errorMessage}"></div>
 
-    <form th:action="@{/users/register}" th:object="${user}" method="post">
-
+    <form th:action="@{/users/register-first-step}" th:object="${userRegistrationFirstStep}" method="post">
         <div class="input-group">
             <label for="name">FIRST NAME</label>
             <input type="text" id="name" th:field="*{name}" placeholder="John" required>
@@ -35,8 +34,8 @@
 
         <div class="input-group">
             <label for="password">PASSWORD</label>
-            <input type="password" id="password" th:field="*{password}" placeholder="••••••••" required>
             <small>Password must contain at least one uppercase letter, one number, and at least 6 characters</small>
+            <input type="password" id="password" th:field="*{password}" placeholder="••••••••" required>
         </div>
 
         <div class="input-group">
@@ -46,8 +45,13 @@
 
         <div class="input-group">
             <label for="phoneNumber">PHONE NUMBER</label>
-            +385<input type="number" id="phoneNumber" th:field="*{phoneNumber}" placeholder="123456789" required>
-            <small>The first digit cannot be zero </small>
+            <div class="phone-input-container">
+                <div class="phone-prefix">+385</div>
+                <input type="number" id="phoneNumber" th:field="*{phoneNumber}"
+                       placeholder="123456789" required
+                       class="phone-number-input">
+            </div>
+            <small>The first digit cannot be zero</small>
         </div>
 
         <div class="input-group">
@@ -59,11 +63,18 @@
             </select>
         </div>
 
-        <button type="submit">SIGN UP</button>
-
-        <div class="footer">
-            Already have an account? <a th:href="@{/users/login}">Sign in</a>
+        <div class="input-group">
+            <label for="university">UNIVERSITY</label>
+            <select id="university" th:field="*{universityId}" required>
+                <option value="">Select University</option>
+                <option th:each="uni : ${universities}"
+                        th:value="${uni.id}"
+                        th:text="${uni.universityName}">
+                </option>
+            </select>
         </div>
+
+        <button type="submit">Next Step</button>
     </form>
 </div>
 </body>

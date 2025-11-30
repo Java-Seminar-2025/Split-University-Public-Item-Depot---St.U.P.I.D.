@@ -1,36 +1,65 @@
 package com.StudenMarket.StUPID.Service;
 
+import com.StudenMarket.StUPID.Entity.Course;
 import com.StudenMarket.StUPID.Entity.User;
-import com.StudenMarket.StUPID.Repository.UserRepository;
+import com.StudenMarket.StUPID.Entity.UserRegistrationFirstStepDTO;
 import com.StudenMarket.StUPID.Exception.AppException;
+import com.StudenMarket.StUPID.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Service
 public class UserService {
-
     @Autowired
     private UserRepository userRepository;
 
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*\\d).{6,}$";
+    public Predicate<UserRegistrationFirstStepDTO> validateFirstStep() {
+        return firstStepDTO -> {
+            validateUsername(firstStepDTO.getUsername());
+            validateEmail(firstStepDTO.getEmail());
+            validateAge(firstStepDTO.getAge());
+            validatePhoneNumber(firstStepDTO.getPhoneNumber());
+            return true;
+        };
+    }
 
-    private void validateEmail(String email) {
-        Optional.ofNullable(email)
-                .filter(e -> e.matches(EMAIL_REGEX))
-                .orElseThrow(() -> new AppException("Invalid email format"));
+    public Function<UserRegistrationFirstStepDTO, User> prepareUserForSecondStep() {
+        return firstStepDTO -> {
+            User user = new User();
+            user.setName(firstStepDTO.getName());
+            user.setLastName(firstStepDTO.getLastName());
+            user.setUsername(firstStepDTO.getUsername());
+            user.setEmail(firstStepDTO.getEmail());
+            user.setAge(firstStepDTO.getAge());
+            user.setPhoneNumber(firstStepDTO.getPhoneNumber());
+            user.setGender(firstStepDTO.getGender());
+            return user;
+        };
+    }
 
-        if (userRepository.existsByEmail(email)) {
-            throw new AppException("Email already exists!");
-        }
+    public BiFunction<User, Course, User> completeUserRegistration() {
+        return (user, course) -> {
+            user.setCourse(course);
+            return userRepository.save(user);
+        };
     }
 
     private void validateUsername(String username) {
         Optional.ofNullable(username)
-                .filter(u -> !userRepository.existsByUsername(u))  // ← Ovo treba vratiti TRUE da prođe
+                .filter(u -> !userRepository.existsByUsername(u))
                 .orElseThrow(() -> new AppException("Username already exists!"));
+    }
+
+    private void validateEmail(String email) {
+        Optional.ofNullable(email)
+                .filter(e -> e.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"))
+                .filter(e -> !userRepository.existsByEmail(e))
+                .orElseThrow(() -> new AppException("Invalid email or email already exists!"));
     }
 
     private void validateAge(int age) {
@@ -41,30 +70,9 @@ public class UserService {
 
     private void validatePhoneNumber(int phoneNumber) {
         String phoneStr = String.valueOf(phoneNumber);
-
         Optional.of(phoneStr)
                 .filter(p -> p.length() >= 9 && p.length() <= 15)
                 .orElseThrow(() -> new AppException("Phone number must be between 9 and 15 digits!"));
-    }
-
-
-    private void validatePassword(String password) {
-        Optional.ofNullable(password)
-                .filter(p -> p.matches(PASSWORD_REGEX))
-                .orElseThrow(() -> new AppException(
-                        "Password must contain at least one uppercase letter, " +
-                                "at least one number, and at least 6 characters!"
-                ));
-    }
-
-    public User userRegister(User user) {
-        validateEmail(user.getEmail());
-        validateUsername(user.getUsername());
-        validateAge(user.getAge());
-        validatePassword(user.getPassword());
-        validatePhoneNumber(user.getPhoneNumber());
-
-        return userRepository.save(user);
     }
 
     public User userLogin(String usernameOrEmail) {

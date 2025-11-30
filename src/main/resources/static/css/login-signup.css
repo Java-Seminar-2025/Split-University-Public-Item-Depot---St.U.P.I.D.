@@ -78,6 +78,38 @@ input {
     transition: all 0.3s;
 }
 
+.phone-input-container {
+    display: flex;
+    align-items: center;
+    border: 2px solid var(--primary);
+}
+
+.phone-prefix {
+    width: 70px;
+    background-color: #f0f0f0;
+    padding: 12px 15px;
+    border-right: 2px solid var(--primary);
+    text-align: center;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.phone-number-input {
+    flex-grow: 1;
+    border: none;
+    padding: 12px 15px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 input:focus {
     box-shadow: 4px 4px 0px var(--primary);
 }
@@ -147,4 +179,39 @@ button:hover {
     color: var(--primary);
     font-weight: bold;
     text-decoration: underline;
+}
+
+.course-selection {
+    display: flex;
+    flex-direction: column;
+}
+
+.course-option {
+    margin-bottom: 15px;
+}
+
+.course-option input[type="radio"] {
+    display: none;
+}
+
+.course-option label {
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--primary);
+    background-color: var(--secondary);
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: left;
+}
+
+.course-option input[type="radio"]:checked + label {
+    background-color: var(--accent);
+    color: var(--secondary);
+    box-shadow: 4px 4px 0px var(--primary);
+}
+
+.course-option label:hover {
+    box-shadow: 4px 4px 0px var(--primary);
+    transform: translate(-2px, -2px);
 }
