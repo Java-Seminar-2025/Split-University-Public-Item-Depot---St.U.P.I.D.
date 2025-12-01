@@ -8,6 +8,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpSession;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.*;
@@ -41,7 +44,6 @@ public class UserController {
     private final BiConsumer<Model, String> addError =
             (model, error) -> model.addAttribute("errorMessage", error);
 
-
     public void validatePassword(String password) {
         Optional.ofNullable(password)
                 .filter(p -> p.matches("^(?=.*[A-Z])(?=.*\\d).{6,}$"))
@@ -66,9 +68,20 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String showLoginForm()
+    public String showLoginForm(HttpSession session)
     {
+        User loggedUser = (User) session.getAttribute("loggedUser");
+        if (loggedUser != null) {
+            return redirectBasedOnRole(loggedUser);
+        }
         return "login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.removeAttribute("loggedUser");
+        session.invalidate();
+        return "redirect:/users/login";
     }
 
     @GetMapping("/get-courses")
@@ -96,7 +109,6 @@ public class UserController {
         try {
             userService.validateFirstStep().test(firstStepDTO);
             validatePassword(firstStepDTO.getPassword());
-
             return "redirect:/users/select-course";
 
         } catch (AppException e) {
@@ -138,6 +150,7 @@ public class UserController {
     public String loginUser(
             @RequestParam String usernameOrEmail,
             @RequestParam String password,
+            HttpSession session,
             Model model)
     {
         try {
@@ -147,11 +160,38 @@ public class UserController {
             {
                 throw new AppException("Invalid password!");
             }
-            return "redirect:/";
+
+            session.setAttribute("loggedUser", user);
+
+            return redirectBasedOnRole(user);
 
         } catch (AppException e) {
             addError.accept(model, e.getMessage());
             return "login";
         }
+    }
+
+    private String redirectBasedOnRole(User user) {
+        switch (user.getRole()) {
+            case ADMIN:
+                return "redirect:/admin/list-users";
+            default:
+                return "redirect:/users/welcome";
+        }
+    }
+
+
+
+    @GetMapping("/welcome")
+    public String welcomePage(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("loggedUser");
+
+        if (currentUser == null) {
+            return "redirect:/users/login";
+        }
+
+        model.addAttribute("username", currentUser.getUsername());
+
+        return "users/welcome";
     }
 }

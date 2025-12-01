@@ -2,11 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Marketplace</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
 </head>
 <body>
-<h1 th:text="${message}">Hello World!</h1>
-<p>Application is running successfully!</p>
+<div class="tm-container">
+    <header class="tm-block tm-block-brand tm-bg-secondary">
+        <div class="tm-block-brand-inner">
+            <h1 class="tm-brand-name tm-text-white">Student Marketplace</h1>
+            <div class="nav-links">
+                <a href="/users/login" class="tm-btn tm-btn-primary">Login</a>
+                <a href="/users/register" class="tm-btn tm-btn-primary">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="tm-block tm-block-wider tm-bg-primary-light">
+            <div class="tm-hero-text">
+                <h2 class="tm-text-white" th:text="${message}">Welcome to Student Marketplace</h2>
+                <p class="tm-text-white">
+                    Connecting students, sharing resources, making academic life easier.
+                </p>
+            </div>
+        </section>
+
+        <section class="tm-block tm-block-pad tm-bg-white">
+            <h2 class="tm-text-uppercase">About Us</h2>
+            <div class="tm-block-icon">
+                <p>Student Marketplace is a platform designed to help students buy, sell, and exchange academic resources.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="tm-footer">
+        <div class="tm-block tm-block-left">
+            <p>© 2025 Student Marketplace | All Rights Reserved</p>
+        </div>
+    </footer>
+</div>
 </body>
 </html>

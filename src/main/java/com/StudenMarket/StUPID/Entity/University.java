@@ -21,4 +21,11 @@ public class University {
     @OneToMany(mappedBy = "university")
     private List<Course> courses= new ArrayList<>();
 
+    @Override
+    public String toString() {
+        return "University{" +
+                "id=" + Id +
+                ", universityName='" + universityName + '\'' +
+                '}';
+    }
 }

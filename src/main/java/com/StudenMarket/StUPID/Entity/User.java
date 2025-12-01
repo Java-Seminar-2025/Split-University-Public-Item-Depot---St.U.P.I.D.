@@ -12,7 +12,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
+@ToString(exclude = {
+        "posts",
+        "purchasedPosts",
+        "approvedPost",
+        "buyerChats",
+        "sentMessages",
+        "favoritePosts",
+        "notifications",
+        "course"
+})
 public class User {
 
     @Id
@@ -32,7 +41,7 @@ public class User {
     private String reputation;
 
     @Enumerated(EnumType.STRING)
-    private Role role = Role.STUDENT;
+    private Role role;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;

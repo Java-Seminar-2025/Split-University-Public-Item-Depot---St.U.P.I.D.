@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User List - Admin Panel</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
+</head>
+<body>
+<div class="tm-container">
+    <header class="tm-block tm-block-brand tm-bg-secondary">
+        <div class="tm-block-brand-inner">
+            <h1 class="tm-brand-name tm-text-white">Admin - User List</h1>
+            <p class="tm-text-white">
+                Welcome, <span th:text="${session.loggedUser.username}">Admin</span>
+            </p>
+        </div>
+    </header>
+
+    <main class="tm-block tm-block-pad tm-bg-white">
+        <div class="tm-block-actions">
+            <a th:href="@{/users/logout}" class="tm-btn tm-btn-secondary">Logout</a>
+        </div>
+
+        <table class="tm-text-gray-light" style=border-collapse:collapse>
+            <thead>
+            <tr class="tm-bg-secondary tm-text-white">
+                <th>Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>Role</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}" class="tm-block-icon">
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.lastName}"></td>
+                <td th:text="${user.username}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.age}"></td>
+                <td th:text="${user.role}"></td>
+                <td>
+                    <a href="#" class="tm-btn tm-btn-small tm-btn-primary">Edit</a>
+                    <a href="#" class="tm-btn tm-btn-small tm-btn-secondary">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <footer class="tm-footer">
+        <div class="tm-block tm-block-left">
+            <p>© 2025 Student Marketplace Admin Panel</p>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

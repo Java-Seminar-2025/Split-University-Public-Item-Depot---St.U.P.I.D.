@@ -1,6 +1,7 @@
 package com.StudenMarket.StUPID.Service;
 
 import com.StudenMarket.StUPID.Entity.Course;
+import com.StudenMarket.StUPID.Entity.Role;
 import com.StudenMarket.StUPID.Entity.User;
 import com.StudenMarket.StUPID.Entity.UserRegistrationFirstStepDTO;
 import com.StudenMarket.StUPID.Exception.AppException;
@@ -8,6 +9,7 @@ import com.StudenMarket.StUPID.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -38,6 +40,7 @@ public class UserService {
             user.setAge(firstStepDTO.getAge());
             user.setPhoneNumber(firstStepDTO.getPhoneNumber());
             user.setGender(firstStepDTO.getGender());
+            user.setRole(Role.STUDENT);
             return user;
         };
     }
@@ -78,5 +81,14 @@ public class UserService {
     public User userLogin(String usernameOrEmail) {
         return userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new AppException("Username or Email doesn't exist!"));
+    }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public User fingUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException("Username doesn't exist!"));
     }
 }

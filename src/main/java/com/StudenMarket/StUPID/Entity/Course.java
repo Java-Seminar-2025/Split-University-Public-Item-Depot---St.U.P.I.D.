@@ -21,4 +21,13 @@ public class Course {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "universityId")
     private University university;
+
+    @Override
+    public String toString() {
+        return "Course{" +
+                "id=" + Id +
+                ", courseName='" + courseName + '\'' +
+                ", universityId=" + (university != null ? university.getId() : null) +
+                '}';
+    }
 }

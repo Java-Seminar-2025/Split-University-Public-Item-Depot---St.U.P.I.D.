@@ -117,7 +117,7 @@ input:focus {
 button {
     width: 100%;
     padding: 12px;
-    background-color: var(--accent);
+    background-color: #cc9999;
     color: var(--secondary);
     border: 2px solid var(--primary);
     font-size: 16px;

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+</head>
+<body>
+<h1 th:text="'Hello, ' + ${username} + '!'">Hello, User!</h1>
+
+<div>
+    <p>Welcome to the Student Marketplace!</p>
+
+    <form th:action="@{/users/logout}" method="get">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+
+<div th:if="${session.loggedUser != null}">
+    <h2>Your Details:</h2>
+    <p>Username: <span th:text="${session.loggedUser.username}">Username</span></p>
+    <p>Email: <span th:text="${session.loggedUser.email}">Email</span></p>
+    <p>Role: <span th:text="${session.loggedUser.role}">Role</span></p>
+</div>
+</body>
+</html>
