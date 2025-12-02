@@ -19,4 +19,5 @@ public class Rules {
     private String title;
     private String content;
     private Date created;
+
 }

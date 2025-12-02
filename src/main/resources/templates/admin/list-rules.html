@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rules List</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
+</head>
+<body>
+<h1>Rules List</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Content</th>
+        <th>Created At</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="rule : ${rules}">
+        <td th:text="${rule.title}"></td>
+        <td th:text="${rule.content}"></td>
+        <td th:text="${#dates.format(rule.created, 'dd.MM.yyyy HH:mm')}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/admin/add-rule}" class="tm-btn tm-btn-secondary">Add new rule</a>
+<a th:href="@{/admin/list-users}" class="tm-btn tm-btn-secondary">Back</a>
+
+</body>
+</html>

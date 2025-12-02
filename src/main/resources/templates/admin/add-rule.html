@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Rule</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
+</head>
+<body>
+<div class="tm-container">
+    <header class="tm-block tm-block-brand tm-bg-secondary">
+        <div class="tm-block-brand-inner">
+            <h1 class="tm-brand-name tm-text-white">Add New Rule</h1>
+        </div>
+    </header>
+
+    <main class="tm-block tm-block-pad tm-bg-white">
+        <form th:action="@{/admin/saveRule}" th:object="${rule}" method="post">
+            <div class="form-group">
+                <label for="title">Rule Title:</label>
+                <input type="text" id="title" th:field="*{title}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="content">Rule Content:</label>
+                <textarea id="content" th:field="*{content}" class="form-control" required rows="5"></textarea>
+            </div>
+
+            <div class="tm-block-actions">
+                <a th:href="@{/admin/list-rules}" class="tm-btn tm-btn-secondary">Cancel</a>
+                <button type="submit" class="tm-btn tm-btn-primary">Save Rule</button>
+            </div>
+        </form>
+    </main>
+</div>
+</body>
+</html>
