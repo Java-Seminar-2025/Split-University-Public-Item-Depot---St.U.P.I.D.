@@ -1,6 +1,3 @@
-
-
-
 package com.StudenMarket.StUPID.Service;
 
 import com.StudenMarket.StUPID.Entity.Course;
@@ -12,7 +9,6 @@ import com.StudenMarket.StUPID.Repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;

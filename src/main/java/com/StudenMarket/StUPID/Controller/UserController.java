@@ -28,6 +28,8 @@ public class UserController {
     private CourseService courseService;
     @Autowired
     private UniversityService UniversityService;
+    @Autowired
+    private RulesService rulesService;
 
     @ModelAttribute("userRegistrationFirstStep")
     public UserRegistrationFirstStepDTO userRegistrationFirstStep() {
@@ -118,6 +120,16 @@ public class UserController {
         model.addAttribute("universities", universities);
 
         return "users/edit-profile";
+    }
+
+    @GetMapping("/show-rules")
+    public String showRules(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("loggedUser");
+        if (currentUser == null) throw new AppException("User not logged in");
+
+        List<Rules> showRules = rulesService.ListAll();
+        model.addAttribute("showRules", showRules);
+        return "users/show-rules";
     }
 
     // POST metode

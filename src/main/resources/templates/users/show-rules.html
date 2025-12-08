@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Marketplace Rules</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
+</head>
+<body>
+<div class="tm-container">
+    <header class="tm-block tm-block-brand tm-bg-secondary">
+        <div class="tm-block-brand-inner">
+            <h1 class="tm-brand-name tm-text-white">Platform Rules</h1>
+        </div>
+    </header>
+
+    <main class="tm-block tm-block-pad tm-bg-white">
+        <div th:if="${showRules.isEmpty()}" class="tm-text-center">
+            <p>No rules have been established yet.</p>
+        </div>
+
+        <div th:unless="${showRules.isEmpty()}">
+            <table class="tm-table">
+                <thead>
+                <tr>
+                    <th>Rule Title</th>
+                    <th>Description</th>
+                    <th>Created Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="rule : ${showRules}">
+                    <td th:text="${rule.title}">Rule Title</td>
+                    <td th:text="${rule.content}">Rule Description</td>
+                    <td th:text="${#dates.format(rule.created, 'dd.MM.yyyy HH:mm')}">Creation Date</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer class="tm-block tm-block-footer tm-bg-secondary">
+        <div class="tm-text-center tm-text-white">
+            <a th:href="@{/users/welcome}" class="tm-btn tm-btn-secondary">Back</a>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
