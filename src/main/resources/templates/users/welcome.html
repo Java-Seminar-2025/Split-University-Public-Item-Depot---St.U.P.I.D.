@@ -11,15 +11,14 @@
     <p>Welcome to the Student Marketplace!</p>
 
     <form th:action="@{/users/logout}" method="get">
-        <button type="submit">Logout</button>
+        <a th:href="@{/users/logout}" class="tm-btn tm-btn-secondary">Logout</a>
+
     </form>
 </div>
 
-<div th:if="${session.loggedUser != null}">
-    <h2>Your Details:</h2>
-    <p>Username: <span th:text="${session.loggedUser.username}">Username</span></p>
-    <p>Email: <span th:text="${session.loggedUser.email}">Email</span></p>
-    <p>Role: <span th:text="${session.loggedUser.role}">Role</span></p>
+<div class="tm-block-actions">
+    <a th:href="@{/users/profile}" class="tm-btn tm-btn-secondary">vIEW profile</a>
 </div>
+
 </body>
 </html>

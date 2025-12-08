@@ -1,3 +1,6 @@
+
+
+
 package com.StudenMarket.StUPID.Service;
 
 import com.StudenMarket.StUPID.Entity.Course;
@@ -6,6 +9,7 @@ import com.StudenMarket.StUPID.Entity.User;
 import com.StudenMarket.StUPID.Entity.UserRegistrationFirstStepDTO;
 import com.StudenMarket.StUPID.Exception.AppException;
 import com.StudenMarket.StUPID.Repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,8 +91,38 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User fingUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new AppException("Username doesn't exist!"));
+    public User findUserById(long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new AppException("User doesn't exist!"));
+    }
+
+    public User saveProfilePicture(Long userId, String imagePath) throws AppException {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new AppException("User not found"));
+
+            user.setImageUrl(imagePath);
+            return userRepository.save(user);
+    }
+
+    @Transactional
+    public User UpdateUser(User user) {
+        try {
+            User existingUser = userRepository.findById(user.getId())
+                    .orElseThrow(() -> new AppException("User not found"));
+
+            existingUser.setName(user.getName());
+            existingUser.setLastName(user.getLastName());
+            existingUser.setUsername(user.getUsername());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setPhoneNumber(user.getPhoneNumber());
+
+            if (user.getCourse() != null) {
+                existingUser.setCourse(user.getCourse());
+            }
+            return userRepository.save(existingUser);
+
+        } catch (Exception e) {
+            throw new AppException("Could not update user: " + e.getMessage());
+        }
     }
 }

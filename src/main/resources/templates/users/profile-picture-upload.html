@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Profile Picture</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
+</head>
+<body>
+<div class="tm-container">
+    <header class="tm-block tm-block-brand tm-bg-secondary">
+        <div class="tm-block-brand-inner">
+            <h1 class="tm-brand-name tm-text-white">Upload Profile Picture</h1>
+        </div>
+    </header>
+
+    <main class="tm-block tm-block-pad tm-bg-white">
+        <form th:action="@{/users/upload-profile-picture}"
+              method="post"
+              enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file" class="tm-text-primary">Select Profile Picture</label>
+                <input type="file"
+                       id="file"
+                       name="file"
+                       accept="image/*"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="tm-block-actions">
+                <button type="submit" class="tm-btn tm-btn-primary">Upload</button>
+                <a th:href="@{/users/profile}" class="tm-btn tm-btn-secondary">Cancel</a>
+            </div>
+        </form>
+
+        <!-- Prikaz trenutne slike profila ako postoji -->
+        <div th:if="${userDetails.imageUrl != null}" class="profile-image-preview">
+            <h3>Current Profile Picture</h3>
+            <img th:src="${userDetails.imageUrl}"
+                 alt="Current Profile Picture"
+                 style="max-width: 300px; max-height: 300px;">
+        </div>
+    </main>
+</div>
+</body>
+</html>

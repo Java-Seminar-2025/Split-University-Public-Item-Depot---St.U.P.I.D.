@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Course</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
+</head>
+<body>
+
+<div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+</div>
+
+<div class="tm-container">
+    <header class="tm-block tm-block-brand tm-bg-secondary">
+        <div class="tm-block-brand-inner">
+            <h1 class="tm-brand-name tm-text-white">Select Course</h1>
+        </div>
+    </header>
+
+    <main class="tm-block tm-block-pad tm-bg-white">
+        <form th:action="@{/users/update-course-selection}" method="post">
+            <select name="courseId" required>
+                <option value="">Choose Course</option>
+                <option th:each="course : ${courses}"
+                        th:value="${course.id}"
+                        th:text="${course.courseName}"></option>
+            </select>
+            <button type="submit">Save Changes</button>
+            <a th:href="@{/users/profile}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </main>
+</div>
+</body>
+</html>

@@ -4,16 +4,19 @@ import com.StudenMarket.StUPID.Entity.*;
 import com.StudenMarket.StUPID.Service.*;
 import com.StudenMarket.StUPID.Exception.AppException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.*;
 
 @Controller
 @RequestMapping("/users")
@@ -21,58 +24,30 @@ import java.util.function.*;
 public class UserController {
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @Autowired
     private CourseService courseService;
-
     @Autowired
     private UniversityService UniversityService;
 
-    private Function<String, String> hashPassword()
-    {
-        return password -> passwordEncoder.encode(password);
-    }
-
-    private BiPredicate<String, String> passwordMatches()
-    {
-        return (password, hashedPassword) -> passwordEncoder.matches(password, hashedPassword);
-    }
-
-    private final BiConsumer<Model, String> addError =
-            (model, error) -> model.addAttribute("errorMessage", error);
-
-    public void validatePassword(String password) {
-        Optional.ofNullable(password)
-                .filter(p -> p.matches("^(?=.*[A-Z])(?=.*\\d).{6,}$"))
-                .orElseThrow(() -> new AppException("Password must contain at least one uppercase letter, one number, and at least 6 characters"));
-    }
-
     @ModelAttribute("userRegistrationFirstStep")
-    public UserRegistrationFirstStepDTO userRegistrationFirstStep()
-    {
+    public UserRegistrationFirstStepDTO userRegistrationFirstStep() {
         return new UserRegistrationFirstStepDTO();
     }
 
+    // GET metode
     @GetMapping("/register")
-    public String showRegisterForm(Model model)
-    {
+    public String showRegisterForm(Model model) {
         List<University> universities = UniversityService.listAllUniversity();
         model.addAttribute("universities", universities);
-
         model.addAttribute("userRegistrationFirstStep", new UserRegistrationFirstStepDTO());
-
         return "register-first-step";
     }
 
     @GetMapping("/login")
-    public String showLoginForm(HttpSession session)
-    {
+    public String showLoginForm(HttpSession session) {
         User loggedUser = (User) session.getAttribute("loggedUser");
         if (loggedUser != null) {
-            return redirectBasedOnRole(loggedUser);
+            return HelpMetods.redirectBasedOnRole(loggedUser);
         }
         return "login";
     }
@@ -86,36 +61,79 @@ public class UserController {
 
     @GetMapping("/get-courses")
     @ResponseBody
-    public List<Course> getCoursesByUniversity(@RequestParam Long universityId)
-    {
+    public List<Course> getCoursesByUniversity(@RequestParam Long universityId) {
         return courseService.getCoursesByUniversity(universityId);
     }
 
     @GetMapping("/select-course")
     public String showCourseSelection(
             @ModelAttribute("userRegistrationFirstStep") UserRegistrationFirstStepDTO firstStepDTO,
-            Model model)
-    {
+            Model model) {
         List<Course> courses = courseService.getCoursesByUniversity(firstStepDTO.getUniversityId());
         model.addAttribute("courses", courses);
         return "register-course-selection";
     }
 
+    @GetMapping("/profile")
+    public String showUserProfile(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("loggedUser");
+        if (currentUser == null) throw new AppException("User doesn't exist!");
+
+        User userDetails = userService.findUserById(currentUser.getId());
+        model.addAttribute("userDetails", userDetails);
+
+        return "users/profile";
+    }
+
+    @GetMapping("/welcome")
+    public String welcomePage(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("loggedUser");
+        if (currentUser == null) {
+            return "redirect:/users/login";
+        }
+        model.addAttribute("username", currentUser.getUsername());
+        return "users/welcome";
+    }
+
+    @GetMapping("/upload-profile-picture")
+    public String showUploadProfilePictureForm(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("loggedUser");
+        if (currentUser == null) {
+            throw new AppException("User not logged in");
+        }
+        User userDetails = userService.findUserById(currentUser.getId());
+        model.addAttribute("userDetails", userDetails);
+        return "users/profile-picture-upload";
+    }
+
+    @GetMapping("/edit-profile")
+    public String showEditProfileForm(HttpSession session, Model model) {
+        User currentUser = (User) session.getAttribute("loggedUser");
+        if (currentUser == null) {
+            throw new AppException("User not logged in");
+        }
+
+        List<University> universities = UniversityService.listAllUniversity();
+        model.addAttribute("userDetails", currentUser);
+        model.addAttribute("universities", universities);
+
+        return "users/edit-profile";
+    }
+
+    // POST metode
     @PostMapping("/register-first-step")
     public String processFirstStep(
             @ModelAttribute("userRegistrationFirstStep") UserRegistrationFirstStepDTO firstStepDTO,
-            Model model)
-    {
+            Model model) {
         try {
             userService.validateFirstStep().test(firstStepDTO);
-            validatePassword(firstStepDTO.getPassword());
+            HelpMetods.validatePassword(firstStepDTO.getPassword());
             return "redirect:/users/select-course";
 
         } catch (AppException e) {
             List<University> universities = UniversityService.listAllUniversity();
             model.addAttribute("universities", universities);
-
-            addError.accept(model, e.getMessage());
+            HelpMetods.addError(model, e.getMessage());
             return "register-first-step";
         }
     }
@@ -124,16 +142,15 @@ public class UserController {
     public String completeRegistration(
             @ModelAttribute("userRegistrationFirstStep") UserRegistrationFirstStepDTO firstStepDTO,
             @RequestParam Long courseId,
-            Model model)
-    {
+            Model model) {
         try {
             userService.validateFirstStep().test(firstStepDTO);
-            validatePassword(firstStepDTO.getPassword());
+            HelpMetods.validatePassword(firstStepDTO.getPassword());
 
             Course course = courseService.findById(courseId);
 
             User user = userService.prepareUserForSecondStep().apply(firstStepDTO);
-            user.setPassword(hashPassword().apply(firstStepDTO.getPassword()));
+            user.setPassword(HelpMetods.hashPassword(firstStepDTO.getPassword()));
             userService.completeUserRegistration().apply(user, course);
 
             return "redirect:/users/login";
@@ -151,47 +168,111 @@ public class UserController {
             @RequestParam String usernameOrEmail,
             @RequestParam String password,
             HttpSession session,
-            Model model)
-    {
+            Model model) {
         try {
             User user = userService.userLogin(usernameOrEmail);
 
-            if (!passwordMatches().test(password, user.getPassword()))
-            {
+            if (!HelpMetods.passwordMatches(password, user.getPassword())) {
                 throw new AppException("Invalid password!");
             }
 
             session.setAttribute("loggedUser", user);
-
-            return redirectBasedOnRole(user);
+            return HelpMetods.redirectBasedOnRole(user);
 
         } catch (AppException e) {
-            addError.accept(model, e.getMessage());
+            HelpMetods.addError(model, e.getMessage());
             return "login";
         }
     }
 
-    private String redirectBasedOnRole(User user) {
-        switch (user.getRole()) {
-            case ADMIN:
-                return "redirect:/admin/list-users";
-            default:
-                return "redirect:/users/welcome";
+    @PostMapping("/upload-profile-picture")
+    public String uploadProfilePicture(
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) throws IOException {
+        User currentUser = (User) session.getAttribute("loggedUser");
+        if (currentUser == null) {
+            throw new AppException("User not logged in");
         }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new AppException("Only image files are allowed");
+        }
+
+        String fileName = currentUser.getId() + "_" +
+                System.currentTimeMillis() +
+                HelpMetods.getFileExtension(file.getOriginalFilename());
+
+        Path uploadPath = Paths.get("./uploads/profile-pictures", fileName);
+        Files.createDirectories(uploadPath.getParent());
+        Files.copy(file.getInputStream(), uploadPath, StandardCopyOption.REPLACE_EXISTING);
+
+        String imagePath = "/uploads/profile-pictures/" + fileName;
+        User updatedUser = userService.saveProfilePicture(currentUser.getId(), imagePath);
+
+        session.setAttribute("loggedUser", updatedUser);
+        return "redirect:/users/profile";
     }
 
-
-
-    @GetMapping("/welcome")
-    public String welcomePage(HttpSession session, Model model) {
+    @PostMapping("/update-profile")
+    public String updateProfile(
+            @ModelAttribute("userDetails") User updatedUser,
+            @RequestParam(value = "universityId", required = false) Long universityId,
+            HttpSession session,
+            Model model) {
         User currentUser = (User) session.getAttribute("loggedUser");
-
         if (currentUser == null) {
-            return "redirect:/users/login";
+            throw new AppException("User not logged in");
         }
 
-        model.addAttribute("username", currentUser.getUsername());
+        currentUser.setName(updatedUser.getName());
+        currentUser.setLastName(updatedUser.getLastName());
+        currentUser.setUsername(updatedUser.getUsername());
+        currentUser.setEmail(updatedUser.getEmail());
+        currentUser.setPhoneNumber(updatedUser.getPhoneNumber());
 
-        return "users/welcome";
+        if (universityId != null && universityId > 0) {
+            List<Course> courses = courseService.getCoursesByUniversity(universityId);
+            model.addAttribute("courses", courses);
+            model.addAttribute("userDetails", currentUser);
+            return "users/update-course-selection";
+        }
+
+        User updatedUserInDB = userService.UpdateUser(currentUser);
+        session.setAttribute("loggedUser", updatedUserInDB);
+
+        return "redirect:/users/profile";
+    }
+
+    @PostMapping("/update-course-selection")
+    public String completeUpdate(
+            @RequestParam Long courseId,
+            HttpSession session,
+            Model model) {
+        try {
+            User currentUser = (User) session.getAttribute("loggedUser");
+            if (currentUser == null) {
+                throw new AppException("User not logged in");
+            }
+
+            if (courseId == null) {
+                throw new AppException("Course selection is required");
+            }
+
+            Course course = courseService.findById(courseId);
+            if (course == null) {
+                throw new AppException("Selected course does not exist");
+            }
+
+            currentUser.setCourse(course);
+
+            User updatedUser = userService.UpdateUser(currentUser);
+            session.setAttribute("loggedUser", updatedUser);
+            return "redirect:/users/profile";
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "An unexpected error occurred: " + e.getMessage());
+            return "users/update-course-selection";
+        }
     }
 }
