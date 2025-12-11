@@ -38,7 +38,8 @@ public class UserController {
 
     // GET metode
     @GetMapping("/register")
-    public String showRegisterForm(Model model) {
+    public String showRegisterForm(Model model)
+    {
         List<University> universities = UniversityService.listAllUniversity();
         model.addAttribute("universities", universities);
         model.addAttribute("userRegistrationFirstStep", new UserRegistrationFirstStepDTO());
@@ -46,8 +47,9 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String showLoginForm(HttpSession session) {
-        User loggedUser = (User) session.getAttribute("loggedUser");
+    public String showLoginForm(HttpSession session)
+    {
+        var loggedUser = (User) session.getAttribute("loggedUser");
         if (loggedUser != null) {
             return HelpMetods.redirectBasedOnRole(loggedUser);
         }
@@ -55,7 +57,8 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public String logout(HttpSession session) {
+    public String logout(HttpSession session)
+    {
         session.removeAttribute("loggedUser");
         session.invalidate();
         return "redirect:/users/login";
@@ -63,14 +66,16 @@ public class UserController {
 
     @GetMapping("/get-courses")
     @ResponseBody
-    public List<Course> getCoursesByUniversity(@RequestParam Long universityId) {
+    public List<Course> getCoursesByUniversity(@RequestParam Long universityId)
+    {
         return courseService.getCoursesByUniversity(universityId);
     }
 
     @GetMapping("/select-course")
     public String showCourseSelection(
             @ModelAttribute("userRegistrationFirstStep") UserRegistrationFirstStepDTO firstStepDTO,
-            Model model) {
+            Model model)
+    {
         List<Course> courses = courseService.getCoursesByUniversity(firstStepDTO.getUniversityId());
         model.addAttribute("courses", courses);
         return "register-course-selection";
@@ -78,42 +83,27 @@ public class UserController {
 
     @GetMapping("/profile")
     public String showUserProfile(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null) throw new AppException("User doesn't exist!");
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
 
-        User userDetails = userService.findUserById(currentUser.getId());
+        var userDetails = userService.findUserById(currentUser.getId());
         model.addAttribute("userDetails", userDetails);
 
         return "users/profile";
     }
 
-    @GetMapping("/welcome")
-    public String welcomePage(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null) {
-            return "redirect:/users/login";
-        }
-        model.addAttribute("username", currentUser.getUsername());
-        return "users/welcome";
-    }
 
     @GetMapping("/upload-profile-picture")
     public String showUploadProfilePictureForm(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null) {
-            throw new AppException("User not logged in");
-        }
-        User userDetails = userService.findUserById(currentUser.getId());
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+
+        var userDetails = userService.findUserById(currentUser.getId());
         model.addAttribute("userDetails", userDetails);
         return "users/profile-picture-upload";
     }
 
     @GetMapping("/edit-profile")
     public String showEditProfileForm(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null) {
-            throw new AppException("User not logged in");
-        }
+        User currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
 
         List<University> universities = UniversityService.listAllUniversity();
         model.addAttribute("userDetails", currentUser);
@@ -124,8 +114,7 @@ public class UserController {
 
     @GetMapping("/show-rules")
     public String showRules(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null) throw new AppException("User not logged in");
+        User currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
 
         List<Rules> showRules = rulesService.ListAll();
         model.addAttribute("showRules", showRules);
@@ -136,7 +125,8 @@ public class UserController {
     @PostMapping("/register-first-step")
     public String processFirstStep(
             @ModelAttribute("userRegistrationFirstStep") UserRegistrationFirstStepDTO firstStepDTO,
-            Model model) {
+            Model model)
+    {
         try {
             userService.validateFirstStep().test(firstStepDTO);
             HelpMetods.validatePassword(firstStepDTO.getPassword());
@@ -182,7 +172,7 @@ public class UserController {
             HttpSession session,
             Model model) {
         try {
-            User user = userService.userLogin(usernameOrEmail);
+            var user = userService.userLogin(usernameOrEmail);
 
             if (!HelpMetods.passwordMatches(password, user.getPassword())) {
                 throw new AppException("Invalid password!");
@@ -200,26 +190,24 @@ public class UserController {
     @PostMapping("/upload-profile-picture")
     public String uploadProfilePicture(
             @RequestParam("file") MultipartFile file,
-            HttpSession session) throws IOException {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null) {
-            throw new AppException("User not logged in");
-        }
+            HttpSession session) throws IOException
+    {
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
 
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new AppException("Only image files are allowed");
         }
 
-        String fileName = currentUser.getId() + "_" +
+        var fileName = currentUser.getId() + "_" +
                 System.currentTimeMillis() +
                 HelpMetods.getFileExtension(file.getOriginalFilename());
 
-        Path uploadPath = Paths.get("./uploads/profile-pictures", fileName);
+        var uploadPath = Paths.get("./uploads/profile-pictures", fileName);
         Files.createDirectories(uploadPath.getParent());
         Files.copy(file.getInputStream(), uploadPath, StandardCopyOption.REPLACE_EXISTING);
 
-        String imagePath = "/uploads/profile-pictures/" + fileName;
+        var imagePath = "/uploads/profile-pictures/" + fileName;
         User updatedUser = userService.saveProfilePicture(currentUser.getId(), imagePath);
 
         session.setAttribute("loggedUser", updatedUser);
@@ -231,11 +219,9 @@ public class UserController {
             @ModelAttribute("userDetails") User updatedUser,
             @RequestParam(value = "universityId", required = false) Long universityId,
             HttpSession session,
-            Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null) {
-            throw new AppException("User not logged in");
-        }
+            Model model)
+    {
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
 
         currentUser.setName(updatedUser.getName());
         currentUser.setLastName(updatedUser.getLastName());
@@ -250,7 +236,7 @@ public class UserController {
             return "users/update-course-selection";
         }
 
-        User updatedUserInDB = userService.UpdateUser(currentUser);
+        var updatedUserInDB = userService.UpdateUser(currentUser);
         session.setAttribute("loggedUser", updatedUserInDB);
 
         return "redirect:/users/profile";
@@ -260,25 +246,23 @@ public class UserController {
     public String completeUpdate(
             @RequestParam Long courseId,
             HttpSession session,
-            Model model) {
+            Model model)
+    {
         try {
-            User currentUser = (User) session.getAttribute("loggedUser");
-            if (currentUser == null) {
-                throw new AppException("User not logged in");
-            }
+            var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
 
             if (courseId == null) {
                 throw new AppException("Course selection is required");
             }
 
-            Course course = courseService.findById(courseId);
+            var course = courseService.findById(courseId);
             if (course == null) {
                 throw new AppException("Selected course does not exist");
             }
 
             currentUser.setCourse(course);
 
-            User updatedUser = userService.UpdateUser(currentUser);
+            var updatedUser = userService.UpdateUser(currentUser);
             session.setAttribute("loggedUser", updatedUser);
             return "redirect:/users/profile";
 

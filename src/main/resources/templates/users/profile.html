@@ -40,12 +40,10 @@
                 <!-- Debug информация -->
                 <p th:text="${'Debug - Image URL: ' + userDetails.imageUrl}">URL slike</p>
 
-                <!-- Prikaz slike -->
                 <img th:if="${userDetails.imageUrl != null}"
                      th:src="${userDetails.imageUrl}"
                      alt="Profile Picture"
-                     style="max-width: 250px; max-height: 250px; object-fit: cover;"
-                <!-- Poruka ako nema slike -->
+                     style="max-width: 250px; max-height: 250px; object-fit: cover;">
                 <p th:if="${userDetails.imageUrl == null}" class="no-image-text">
                     No Profile Picture
                 </p>
@@ -74,7 +72,7 @@
 
         <div class="tm-block-actions">
             <a th:href="@{/users/edit-profile}" class="tm-btn tm-btn-primary">Edit Profile</a>
-            <a th:href="@{/users/welcome}" class="tm-btn tm-btn-secondary">Back to Dashboard</a>
+            <a th:href="@{/users/sell-posts}" class="tm-btn tm-btn-secondary">Back to Dashboard</a>
         </div>
     </main>
 </div>

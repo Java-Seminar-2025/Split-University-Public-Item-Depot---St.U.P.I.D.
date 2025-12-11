@@ -2,6 +2,7 @@ package com.StudenMarket.StUPID.Controller;
 
 import com.StudenMarket.StUPID.Entity.User;
 import com.StudenMarket.StUPID.Exception.AppException;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -39,7 +40,7 @@ public class HelpMetods {
             case ADMIN:
                 return "redirect:/admin/list-users";
             default:
-                return "redirect:/users/welcome";
+                return "redirect:/users/sell-posts";
         }
     }
 
@@ -47,5 +48,13 @@ public class HelpMetods {
         return filename != null && filename.contains(".") ?
                 filename.substring(filename.lastIndexOf(".")) :
                 ".jpg";
+    }
+
+    public static Optional<User> validateLoggedInUser(HttpSession session) {
+        User currentUser = (User) session.getAttribute("loggedUser");
+        return Optional.ofNullable(currentUser)
+                .or(() -> {
+                    throw new AppException("User not logged in");
+                });
     }
 }

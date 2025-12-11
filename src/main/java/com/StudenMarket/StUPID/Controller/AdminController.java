@@ -29,7 +29,7 @@ public class AdminController {
 
     @GetMapping("/list-users")
     public String listUsers(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
+        var currentUser = (User) session.getAttribute("loggedUser");
 
         if (currentUser == null || currentUser.getRole() != Role.ADMIN) {
             return "redirect:/users/login";
@@ -42,8 +42,8 @@ public class AdminController {
 
     @GetMapping("/list-rules")
     public String listRules(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
-        if (currentUser == null || currentUser.getRole() != Role.ADMIN) {
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+        if (currentUser.getRole() != Role.ADMIN) {
             return "redirect:/users/login";
         }
 
@@ -54,7 +54,7 @@ public class AdminController {
 
     @GetMapping("/add-rule")
     public String showRuleForm(HttpSession session, Model model) {
-        User currentUser = (User) session.getAttribute("loggedUser");
+        var currentUser = (User) session.getAttribute("loggedUser");
 
         if (currentUser == null || currentUser.getRole() != Role.ADMIN) {
             return "redirect:/users/login";
@@ -66,7 +66,7 @@ public class AdminController {
 
     @PostMapping("/saveRule")
     public String saveRule(HttpSession session, Rules rule) {
-        User currentUser = (User) session.getAttribute("loggedUser");
+        var currentUser = (User) session.getAttribute("loggedUser");
 
         if (currentUser == null || currentUser.getRole() != Role.ADMIN) {
             return "redirect:/users/login";

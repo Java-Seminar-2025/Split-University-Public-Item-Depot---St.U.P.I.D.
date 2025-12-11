@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sell Posts</title>
+    <link rel="stylesheet" href="/css/tooplate-style.css">
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="#" th:href="@{/users/sell-posts}">Sell Posts</a></li>
+            <li><a href="#" th:href="@{/users/free-posts}">Free Posts</a></li>
+            <li><a href="#" th:href="@{/users/seeking-posts}">Seeking Posts</a></li>
+        </ul>
+    </div>
+
+    <div class="content">
+        <div class="header">
+            <h1>My Sell Posts</h1>
+            <div>
+                <a th:href="@{/users/profile}" class="btn btn-primary">View Profile</a>
+                <a th:href="@{/users/logout}" class="logout-btn">Logout</a>
+                <a th:href="@{/users/show-rules}" class="logout-btn">Read rules</a>
+
+            </div>
+        </div>
+
+        <div th:if="${posts.isEmpty()}" class="tm-text-center">
+            <p>You haven't created any sell posts yet.</p>
+            <a th:href="@{/users/create-sell-post}" class="btn btn-primary">Create Sell Post</a>
+        </div>
+
+        <div th:unless="${posts.isEmpty()}" class="post-grid">
+            <div th:each="post : ${posts}" class="post-card">
+                <img th:if="${post.imageUrl != null}"
+                     th:src="${post.imageUrl}"
+                     th:text="${'Image URL: ' + post.imageUrl}"
+                     alt="Post Image"
+                     class="post-image">
+                <div class="post-details">
+                    <h3 th:text="${post.title}">Post Title</h3>
+                    <p th:text="${post.content}">Post Description</p>
+                    <p class="post-price">Price: <span th:text="${post.price}">0</span> EUR</p>
+                    <p>Created: <span th:text="${#dates.format(post.created, 'dd.MM.yyyy')}">Date</span></p>
+                    <div class="post-actions">
+                        <a href="#" class="btn btn-primary">Edit</a>
+                        <a href="#" class="btn btn-secondary">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/users/create-sell-post}" class="btn btn-primary">Create New Sell Post</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

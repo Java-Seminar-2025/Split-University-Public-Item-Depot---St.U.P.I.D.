@@ -6,31 +6,38 @@
     <link rel="stylesheet" href="/css/tooplate-style.css">
 </head>
 <body>
-<div class="tm-container">
-    <header class="tm-block tm-block-brand tm-bg-secondary">
-        <div class="tm-block-brand-inner">
-            <h1 class="tm-brand-name tm-text-white">Add New Rule</h1>
-        </div>
-    </header>
+<div class="container">
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li><a href="#" th:href="@{/admin/list-users}">User List</a></li>
+            <li><a href="#" th:href="@{/admin/list-rules}">Rules List</a></li>
+            <li><a href="#" th:href="@{/admin/add-rule}">Add Rule</a></li>
+        </ul>
+    </div>
 
-    <main class="tm-block tm-block-pad tm-bg-white">
+    <div class="content">
+        <div class="header">
+            <h1>Add New Rule</h1>
+            <a href="#" th:href="@{/users/logout}" class="logout-btn">Logout</a>
+        </div>
+
         <form th:action="@{/admin/saveRule}" th:object="${rule}" method="post">
             <div class="form-group">
                 <label for="title">Rule Title:</label>
-                <input type="text" id="title" th:field="*{title}" class="form-control" required>
+                <input type="text" id="title" th:field="*{title}" required>
             </div>
 
             <div class="form-group">
                 <label for="content">Rule Content:</label>
-                <textarea id="content" th:field="*{content}" class="form-control" required rows="5"></textarea>
+                <textarea id="content" th:field="*{content}" required rows="5"></textarea>
             </div>
 
-            <div class="tm-block-actions">
-                <a th:href="@{/admin/list-rules}" class="tm-btn tm-btn-secondary">Cancel</a>
-                <button type="submit" class="tm-btn tm-btn-primary">Save Rule</button>
+            <div class="actions">
+                <a th:href="@{/admin/list-rules}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Rule</button>
             </div>
         </form>
-    </main>
+    </div>
 </div>
 </body>
 </html>
