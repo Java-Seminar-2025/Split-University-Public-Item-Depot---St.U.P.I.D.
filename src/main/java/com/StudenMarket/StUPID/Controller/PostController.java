@@ -3,7 +3,6 @@ package com.StudenMarket.StUPID.Controller;
 import com.StudenMarket.StUPID.Entity.Category;
 import com.StudenMarket.StUPID.Entity.Post;
 import com.StudenMarket.StUPID.Entity.User;
-import com.StudenMarket.StUPID.Exception.AppException;
 import com.StudenMarket.StUPID.Service.CategoryService;
 import com.StudenMarket.StUPID.Service.PostService;
 import jakarta.servlet.http.HttpSession;
@@ -12,8 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -42,6 +39,38 @@ public class PostController {
         model.addAttribute("post", new Post());
         model.addAttribute("categories", categories);
         return "users/create-sell-post";
+    }
+
+    @GetMapping("/free-posts")
+    public String showFreePosts(HttpSession session, Model model) {
+        User currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+
+        List<Post> freePosts = postService.listAllFreePosts(currentUser);
+        model.addAttribute("posts", freePosts);
+        return "users/free-posts";
+    }
+
+    @GetMapping("/create-free-posts")
+    public String showCreateFreePostForm(HttpSession session, Model model) {
+        User currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+
+        List<Category> categories = categoryService.findAll();
+
+        model.addAttribute("post", new Post());
+        model.addAttribute("categories", categories);
+        return "users/create-free-posts";
+    }
+
+    @PostMapping("/create-free-posts")
+    public String createFreePost(
+            @ModelAttribute("post") Post post,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            HttpSession session) {
+
+        post.setPrice((short)0);
+        User currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+        Post createdPost = postService.createFreePost(post, currentUser, file);
+        return "redirect:/users/free-posts";
     }
 
     @PostMapping("/create-sell-post")

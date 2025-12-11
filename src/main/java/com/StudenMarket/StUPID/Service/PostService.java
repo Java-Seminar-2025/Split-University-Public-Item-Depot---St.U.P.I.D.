@@ -43,6 +43,15 @@ public class PostService {
         };
     }
 
+    private  Predicate<Post> validateFreePost() {
+        return post -> {
+            if (post.getPrice() != 0) {
+                throw new AppException("Sell post must have a price equals zero");
+            }
+            return true;
+        };
+    }
+
     private Function<MultipartFile, String> uploadImage(User currentUser) {
         return file -> {
             try {
@@ -81,9 +90,27 @@ public class PostService {
                 .orElseThrow(() -> new AppException("Post creation failed"));
     }
 
+    public Post createFreePost(Post post, User currentUser, MultipartFile file) {
+        return Optional.of(post)
+                .filter(validateFreePost())
+                .map(preparePost(currentUser))
+                .map(p -> {
+                    String imagePath = uploadImage(currentUser).apply(file);
+                    p.setImageUrl(imagePath);
+                    return p;
+                })
+                .map(postRepository::save)
+                .orElseThrow(() -> new AppException("Post creation failed"));
+    }
+
 
     public List<Post> listAllSellPosts(User user) {
         return postRepository.findByAuthorAndPriceGreaterThan(user, (short) 0)
+                .orElse(Collections.emptyList());
+    }
+
+    public List<Post> listAllFreePosts(User user) {
+        return postRepository.findByAuthorAndPriceEquals(user, (short) 0)
                 .orElse(Collections.emptyList());
     }
 
