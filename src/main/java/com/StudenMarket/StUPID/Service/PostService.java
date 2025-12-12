@@ -90,19 +90,6 @@ public class PostService {
                 .orElseThrow(() -> new AppException("Post creation failed"));
     }
 
-    public Post createFreePost(Post post, User currentUser, MultipartFile file) {
-        return Optional.of(post)
-                .filter(validateFreePost())
-                .map(preparePost(currentUser))
-                .map(p -> {
-                    String imagePath = uploadImage(currentUser).apply(file);
-                    p.setImageUrl(imagePath);
-                    return p;
-                })
-                .map(postRepository::save)
-                .orElseThrow(() -> new AppException("Post creation failed"));
-    }
-
 
     public List<Post> listAllSellPosts(User user) {
         return postRepository.findByAuthorAndPriceGreaterThan(user, (short) 0)
@@ -110,8 +97,27 @@ public class PostService {
     }
 
     public List<Post> listAllFreePosts(User user) {
-        return postRepository.findByAuthorAndPriceEquals(user, (short) 0)
+        return postRepository.findByAuthorAndPriceEqualsAndSeekingFalse(user, (short) 0)
                 .orElse(Collections.emptyList());
+    }
+
+    public Post createFreePost(Post post, User currentUser, MultipartFile file) {
+        return Optional.of(post)
+                .filter(p -> {
+                    if (p.getPrice() != 0 || p.isSeeking()) {
+                        throw new AppException("Free post must have zero price and not be a seeking post");
+                    }
+                    return true;
+                })
+                .map(preparePost(currentUser))
+                .map(p -> {
+                    p.setSeeking(false);  // Explicit setting
+                    String imagePath = uploadImage(currentUser).apply(file);
+                    p.setImageUrl(imagePath);
+                    return p;
+                })
+                .map(postRepository::save)
+                .orElseThrow(() -> new AppException("Free post creation failed"));
     }
 
     private String getFileExtension(String filename) {
@@ -119,6 +125,24 @@ public class PostService {
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(f.lastIndexOf(".")))
                 .orElse(".jpg");
+    }
+
+    public List<Post> listAllSeekingPosts(User user) {
+        return postRepository.findByAuthorAndSeeking(user, true)
+                .orElse(Collections.emptyList());
+    }
+
+    public Post createSeekingPost(Post post, User currentUser, MultipartFile file) {
+        post.setSeeking(true);
+        return Optional.of(post)
+                .map(preparePost(currentUser))
+                .map(p -> {
+                    String imagePath = uploadImage(currentUser).apply(file);
+                    p.setImageUrl(imagePath);
+                    return p;
+                })
+                .map(postRepository::save)
+                .orElseThrow(() -> new AppException("Seeking post creation failed"));
     }
 }
 

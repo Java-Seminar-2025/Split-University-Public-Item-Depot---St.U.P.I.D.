@@ -1,0 +1,2 @@
+ALTER TABLE posts
+    ADD seeking BIT NOT NULL DEFAULT 0;

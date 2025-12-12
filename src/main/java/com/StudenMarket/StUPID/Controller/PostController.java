@@ -65,11 +65,12 @@ public class PostController {
     public String createFreePost(
             @ModelAttribute("post") Post post,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            HttpSession session) {
+            HttpSession session)
+    {
 
         post.setPrice((short)0);
-        User currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
-        Post createdPost = postService.createFreePost(post, currentUser, file);
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+        var createdPost = postService.createFreePost(post, currentUser, file);
         return "redirect:/users/free-posts";
     }
 
@@ -78,9 +79,44 @@ public class PostController {
             @ModelAttribute("post") Post post,
             @RequestParam(value = "file", required = false) MultipartFile file, HttpSession session)
     {
-        User currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
-        Post createdPost = postService.createSellPost(post, currentUser, file);
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+        var createdPost = postService.createSellPost(post, currentUser, file);
         return "redirect:/users/sell-posts";
+    }
+
+    @GetMapping("/seeking-posts")
+    public String showSeekingPosts(HttpSession session, Model model)
+    {
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+
+        List<Post> seekingPosts = postService.listAllSeekingPosts(currentUser);
+        model.addAttribute("posts", seekingPosts);
+        return "users/seeking-posts";
+    }
+
+    @GetMapping("/create-seeking-post")
+    public String showCreateSeekingPostForm(HttpSession session, Model model)
+    {
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+
+        List<Category> categories = categoryService.findAll();
+
+        model.addAttribute("post", new Post());
+        model.addAttribute("categories", categories);
+        return "users/create-seeking-post";
+    }
+
+    @PostMapping("/create-seeking-post")
+    public String createSeekingPost(
+            @ModelAttribute("post") Post post,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            HttpSession session)
+    {
+
+        post.setPrice((short) 0);
+        var currentUser = HelpMetods.validateLoggedInUser(session).orElseThrow();
+        var createdPost = postService.createSeekingPost(post, currentUser, file);
+        return "redirect:/users/seeking-posts";
     }
 }
 

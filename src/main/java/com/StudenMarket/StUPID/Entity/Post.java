@@ -22,6 +22,7 @@ public class Post {
     private short price;
     private String status;
     private Date created;
+    private boolean seeking=false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
