@@ -40,7 +40,7 @@ public class HelpMetods {
             case ADMIN:
                 return "redirect:/admin/list-users";
             default:
-                return "redirect:/users/sell-posts";
+                return "redirect:/users/all-posts";
         }
     }
 

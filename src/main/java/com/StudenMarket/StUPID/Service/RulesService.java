@@ -13,11 +13,13 @@ public class RulesService {
     @Autowired
     private RulesRepository rulesRepository;
 
-    public List<Rules> ListAll() {
+    public List<Rules> ListAll()
+    {
         return rulesRepository.findAll();
     }
 
-    public Rules CreateRule(Rules rule) {
+    public Rules CreateRule(Rules rule)
+    {
         return rulesRepository.save(rule);
     }
 }

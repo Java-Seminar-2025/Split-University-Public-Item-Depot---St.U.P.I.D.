@@ -27,13 +27,22 @@
     </style>
 </head>
 <body>
-<div class="tm-container">
-    <header class="tm-block tm-block-brand tm-bg-secondary">
-        <div class="tm-block-brand-inner">
-            <h1 class="tm-brand-name tm-text-white">User Profile</h1>
-        </div>
-    </header>
+    <div class="navigation-bar">
+        <div class="nav-menu">
+            <a th:href="@{/users/edit-profile}" class="tm-btn tm-btn-primary">Edit Profile</a>
 
+        </div>
+        <div class="nav-actions">
+            <a th:href="@{/users/all-posts}" class="btn btn-primary">Home</a>
+            <a th:href="@{/users/logout}" class="logout-btn">Logout</a>
+        </div>
+    </div>
+    <div class="tm-container">
+        <header class="tm-block tm-block-brand tm-bg-secondary">
+            <div class="tm-block-brand-inner">
+                <h1 class="tm-brand-name tm-text-white">User Profile</h1>
+            </div>
+        </header>
     <main class="tm-block tm-block-pad tm-bg-white">
         <div class="profile-container">
             <div class="profile-image">
@@ -68,11 +77,6 @@
                 <p><strong>Course:</strong> <span th:text="${userDetails.course != null ? userDetails.course.courseName : 'No Course'}">-</span></p>
                 <p><strong>University:</strong> <span th:text="${userDetails.course != null ? userDetails.course.university.universityName : 'No University'}">-</span></p>
             </div>
-        </div>
-
-        <div class="tm-block-actions">
-            <a th:href="@{/users/edit-profile}" class="tm-btn tm-btn-primary">Edit Profile</a>
-            <a th:href="@{/users/sell-posts}" class="tm-btn tm-btn-secondary">Back to Dashboard</a>
         </div>
     </main>
 </div>

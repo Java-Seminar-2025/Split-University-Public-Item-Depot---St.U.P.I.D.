@@ -16,12 +16,14 @@ public class FileUploadConfig {
     private String postPicturesDir;
 
     @PostConstruct
-    public void createUploadDirectories() {
+    public void createUploadDirectories()
+    {
         createDirectory(profilePicturesDir);
         createDirectory(postPicturesDir);
     }
 
-    private void createDirectory(String path) {
+    private void createDirectory(String path)
+    {
         File directory = new File(path);
         if (!directory.exists()) {
             boolean created = directory.mkdirs();

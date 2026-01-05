@@ -24,7 +24,13 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    private Function<Post, Post> preparePost(User currentUser) {
+    public Post findPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new AppException("Post not found with id: " + postId));
+    }
+
+    private Function<Post, Post> preparePost(User currentUser)
+    {
         return post -> {
             post.setCreated(new Date());
             post.setAuthor(currentUser);
@@ -43,7 +49,8 @@ public class PostService {
         };
     }
 
-    private  Predicate<Post> validateFreePost() {
+    private  Predicate<Post> validateFreePost()
+    {
         return post -> {
             if (post.getPrice() != 0) {
                 throw new AppException("Sell post must have a price equals zero");
@@ -52,7 +59,8 @@ public class PostService {
         };
     }
 
-    private Function<MultipartFile, String> uploadImage(User currentUser) {
+    private Function<MultipartFile, String> uploadImage(User currentUser)
+    {
         return file -> {
             try {
                 if (file == null || file.isEmpty()) {
@@ -77,7 +85,8 @@ public class PostService {
         };
     }
 
-    public Post createSellPost(Post post, User currentUser, MultipartFile file) {
+    public Post createSellPost(Post post, User currentUser, MultipartFile file)
+    {
         return Optional.of(post)
                 .filter(validateSellPost())
                 .map(preparePost(currentUser))
@@ -91,17 +100,20 @@ public class PostService {
     }
 
 
-    public List<Post> listAllSellPosts(User user) {
+    public List<Post> listAllSellPosts(User user)
+    {
         return postRepository.findByAuthorAndPriceGreaterThan(user, (short) 0)
                 .orElse(Collections.emptyList());
     }
 
-    public List<Post> listAllFreePosts(User user) {
+    public List<Post> listAllFreePosts(User user)
+    {
         return postRepository.findByAuthorAndPriceEqualsAndSeekingFalse(user, (short) 0)
                 .orElse(Collections.emptyList());
     }
 
-    public Post createFreePost(Post post, User currentUser, MultipartFile file) {
+    public Post createFreePost(Post post, User currentUser, MultipartFile file)
+    {
         return Optional.of(post)
                 .filter(p -> {
                     if (p.getPrice() != 0 || p.isSeeking()) {
@@ -120,19 +132,22 @@ public class PostService {
                 .orElseThrow(() -> new AppException("Free post creation failed"));
     }
 
-    private String getFileExtension(String filename) {
+    private String getFileExtension(String filename)
+    {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))
                 .map(f -> f.substring(f.lastIndexOf(".")))
                 .orElse(".jpg");
     }
 
-    public List<Post> listAllSeekingPosts(User user) {
+    public List<Post> listAllSeekingPosts(User user)
+    {
         return postRepository.findByAuthorAndSeeking(user, true)
                 .orElse(Collections.emptyList());
     }
 
-    public Post createSeekingPost(Post post, User currentUser, MultipartFile file) {
+    public Post createSeekingPost(Post post, User currentUser, MultipartFile file)
+    {
         post.setSeeking(true);
         return Optional.of(post)
                 .map(preparePost(currentUser))
@@ -144,5 +159,20 @@ public class PostService {
                 .map(postRepository::save)
                 .orElseThrow(() -> new AppException("Seeking post creation failed"));
     }
+
+
+    public List<Post> filterPosts(
+            String postType,
+            Long categoryId,
+            Long courseId)
+    {
+        // Null pretvori u prazan string ili nul
+        postType = postType == null || postType.equals("ALL") ? null : postType;
+        categoryId = categoryId != null && categoryId == 0 ? null : categoryId;
+        courseId = courseId != null && courseId == 0 ? null : courseId;
+
+        return postRepository.filterPosts(postType, categoryId, courseId);
+    }
 }
+
 

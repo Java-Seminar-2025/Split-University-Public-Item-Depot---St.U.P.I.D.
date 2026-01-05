@@ -5,6 +5,18 @@
     <link rel="stylesheet" href="/css/tooplate-style.css">
 </head>
 <body>
+<div class="navigation-bar">
+    <div class="nav-menu">
+        <a href="#" th:href="@{/users/sell-posts}" class="view-my-posts-btn">View My Posts</a>
+        <a href="#" th:href="@{/users/favorite-posts}" class="view-my-posts-btn">View My  Favourite Posts</a>
+
+    </div>
+    <div class="nav-actions">
+        <a th:href="@{/users/all-posts}" class="btn btn-primary">Home</a>
+        <a th:href="@{/users/profile}" class="btn btn-primary">View Profile</a>
+        <a th:href="@{/users/logout}" class="logout-btn">Logout</a>
+    </div>
+</div>
 <div class="container">
     <div class="sidebar">
         <ul class="sidebar-menu">
@@ -13,16 +25,6 @@
             <li><a href="#" th:href="@{/users/seeking-posts}">Seeking Posts</a></li>
         </ul>
     </div>
-
-    <div class="content">
-        <div class="header">
-            <h1>My Seeking Posts</h1>
-            <div>
-                <a th:href="@{/users/profile}" class="btn btn-primary">View Profile</a>
-                <a th:href="@{/users/logout}" class="logout-btn">Logout</a>
-            </div>
-        </div>
-
         <div th:if="${posts.isEmpty()}" class="tm-text-center">
             <p>You haven't created any seeking posts yet.</p>
             <a th:href="@{/users/create-seeking-post}" class="btn btn-primary">Create Seeking Post</a>
@@ -39,6 +41,18 @@
                     <p th:text="${post.content}">Post Description</p>
                     <p>Created: <span th:text="${#dates.format(post.created, 'dd.MM.yyyy')}">Date</span></p>
                     <div class="post-actions">
+                        <form th:action="@{/users/add-to-favorites}" method="post" class="favorite-form">
+                            <input type="hidden" name="postId" th:value="${post.id}">
+                            <button type="submit" class="favorite-btn"
+                                    th:classappend="${@favoritePostService.isPostInFavorites(session.loggedUser, post) ? 'active' : ''}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                     class="feather feather-heart">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                            </button>
+                        </form>
                         <a href="#" class="btn btn-primary">Edit</a>
                         <a href="#" class="btn btn-secondary">Delete</a>
                     </div>

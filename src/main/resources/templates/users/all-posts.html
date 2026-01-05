@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Free Posts</title>
+    <title>All Posts</title>
     <link rel="stylesheet" href="/css/tooplate-style.css">
 </head>
 <body>
@@ -12,34 +12,68 @@
 
     </div>
     <div class="nav-actions">
-        <a th:href="@{/users/all-posts}" class="btn btn-primary">Home</a>+
         <a th:href="@{/users/profile}" class="btn btn-primary">View Profile</a>
         <a th:href="@{/users/logout}" class="logout-btn">Logout</a>
     </div>
 </div>
-<div class="container">
-    <div class="sidebar">
-        <ul class="sidebar-menu">
-            <li><a href="#" th:href="@{/users/sell-posts}">Sell Posts</a></li>
-            <li><a href="#" th:href="@{/users/free-posts}">Free Posts</a></li>
-            <li><a href="#" th:href="@{/users/seeking-posts}">Seeking Posts</a></li>
-        </ul>
-    </div>
+
+    <div class="content">
+                <form th:action="@{/users/all-posts}" method="get" class="filter-form">
+                    <select name="postType">
+                        <option value="ALL" th:selected="${postType == 'ALL'}">All Posts</option>
+                        <option value="SELL" th:selected="${postType == 'SELL'}">Sell Posts</option>
+                        <option value="FREE" th:selected="${postType == 'FREE'}">Free Posts</option>
+                        <option value="SEEKING" th:selected="${postType == 'SEEKING'}">Seeking Posts</option>
+                    </select>
+
+                    <select name="categoryId">
+                        <option value="">All Categories</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:text="${category.name}"
+                                th:selected="${category.id == selectedCategoryId}">
+                        </option>
+                    </select>
+
+                    <select name="courseId">
+                        <option value="">All Courses</option>
+                        <option th:each="course : ${courses}"
+                                th:value="${course.id}"
+                                th:text="${course.courseName}"
+                                th:selected="${course.id == selectedCourseId}">
+                        </option>
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">Filter Posts</button>
+                </form>
+            </div>
+        </div>
 
         <div th:if="${posts.isEmpty()}" class="tm-text-center">
-            <p>You haven't created any free posts yet.</p>
+            <p>No posts found.</p>
         </div>
 
         <div th:unless="${posts.isEmpty()}" class="post-grid">
             <div th:each="post : ${posts}" class="post-card">
+                <div class="post-header">
+                    <span class="post-author" th:text="${post.author.username}">Username</span>
+                    <span class="post-date" th:text="${#dates.format(post.created, 'dd.MM.yyyy HH:mm')}">Date</span>
+                </div>
+
                 <img th:if="${post.imageUrl != null}"
                      th:src="${post.imageUrl}"
                      alt="Post Image"
                      class="post-image">
+
                 <div class="post-details">
                     <h3 th:text="${post.title}">Post Title</h3>
                     <p th:text="${post.content}">Post Description</p>
-                    <p>Created: <span th:text="${#dates.format(post.created, 'dd.MM.yyyy')}">Date</span></p>
+                    <p class="post-price" th:if="${post.price > 0}">
+                        Price: <span th:text="${post.price}">0</span> EUR
+                    </p>
+                    <p>Category: <span th:text="${post.category.name}">Category</span></p>
+                    <p>Course: <span th:text="${post.author.course?.courseName ?: 'N/A'}">Course</span></p>
+
                     <div class="post-actions">
                         <form th:action="@{/users/add-to-favorites}" method="post" class="favorite-form">
                             <input type="hidden" name="postId" th:value="${post.id}">
@@ -53,15 +87,9 @@
                                 </svg>
                             </button>
                         </form>
-                        <a href="#" class="btn btn-primary">Edit</a>
-                        <a href="#" class="btn btn-secondary">Delete</a>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="actions">
-            <a th:href="@{/users/create-free-posts}" class="btn btn-primary">Create New Free Post</a>
         </div>
     </div>
 </div>

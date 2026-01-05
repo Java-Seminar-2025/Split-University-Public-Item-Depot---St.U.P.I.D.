@@ -19,7 +19,7 @@ public class FavoritePost {
     private Date date;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user")
+    @JoinColumn(name = "userId")
     private User userId;
 
     @ManyToOne(fetch = FetchType.LAZY)

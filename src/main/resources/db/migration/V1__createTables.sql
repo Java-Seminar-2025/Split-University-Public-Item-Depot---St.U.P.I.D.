@@ -192,16 +192,16 @@ GO
 CREATE TABLE favoritePosts (
                                id BIGINT IDENTITY(1,1) PRIMARY KEY,
                                date DATETIME2 NOT NULL DEFAULT GETDATE(),
-    [user] BIGINT NOT NULL,
+                               userId BIGINT NOT NULL,
                                adid BIGINT NOT NULL,
-                               CONSTRAINT FK_FavoritePost_User FOREIGN KEY ([user])
+                               CONSTRAINT FK_FavoritePost_User FOREIGN KEY (userId)
                                    REFERENCES users(Id) ON DELETE CASCADE,
                                CONSTRAINT FK_FavoritePost_Post FOREIGN KEY (adid)
                                    REFERENCES posts(id) ON DELETE NO ACTION
 );
 GO
 
-CREATE INDEX IDX_FavoritePost_User ON favoritePosts([user]);
+CREATE INDEX IDX_FavoritePost_User ON favoritePosts(userId);
 CREATE INDEX IDX_FavoritePost_Post ON favoritePosts(adid);
-CREATE UNIQUE INDEX UQ_FavoritePost_User_Post ON favoritePosts([user], adid);
+CREATE UNIQUE INDEX UQ_FavoritePost_User_Post ON favoritePosts(userId,adid);
 GO

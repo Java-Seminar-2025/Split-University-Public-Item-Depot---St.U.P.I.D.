@@ -6,21 +6,9 @@
 </head>
 <body>
 <div class="container">
-    <div class="sidebar">
-        <ul class="sidebar-menu">
-            <li><a href="#" th:href="@{/users/sell-posts}">Sell Posts</a></li>
-            <li><a href="#" th:href="@{/users/free-posts}">Free Posts</a></li>
-            <li><a href="#" th:href="@{/users/seeking-posts}">Seeking Posts</a></li>
-        </ul>
-    </div>
-
     <div class="content">
         <div class="header">
             <h1>Create Sell Post</h1>
-            <div>
-                <a th:href="@{/users/profile}" class="btn btn-primary">View Profile</a>
-                <a th:href="@{/users/logout}" class="logout-btn">Logout</a>
-            </div>
         </div>
 
         <form th:action="@{/users/create-sell-post}" method="post" enctype="multipart/form-data">

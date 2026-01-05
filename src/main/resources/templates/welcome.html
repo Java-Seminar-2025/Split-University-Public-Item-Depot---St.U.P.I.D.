@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Marketplace</title>
+    <link rel="stylesheet" href="/css/welcome.css">
+</head>
+<body>
+<nav class="navbar">
+    <div class="logo">Student Marketplace</div>
+    <div class="nav-actions">
+        <a th:href="@{/users/login}" class="btn btn-login">login</a>
+        <a th:href="@{/users/register}" class="btn btn-register">Sign up</a>
+    </div>
+</nav>
+
+<main class="hero-section">
+    <div class="hero-content">
+        <h1>Student Marketplace</h1>
+        <p>Buy, sell, and share items within the Split University community. Connect with fellow students and find great deals.</p>
+        <a th:href="@{/users/register}" class="btn btn-get-started">Get Started</a>
+    </div>
+</main>
+
+<section class="features">
+    <h2>Why Choose Our Marketplace?</h2>
+    <div class="feature-grid">
+        <div class="feature-item">
+            <div class="feature-icon safe-icon">🛡️</div>
+            <h3>Safe & Verified</h3>
+            <p>All listings are reviewed by administrators before going live</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon community-icon">👥</div>
+            <h3>Student Community</h3>
+            <p>Connect with students from your university and faculty</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon learning-icon">📚</div>
+            <h3>Academic Exchange</h3>
+            <p>Share study materials, notes, and resources with peers</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon sustainability-icon">♻️</div>
+            <h3>Sustainable Sharing</h3>
+            <p>Reduce waste by reusing and recycling student resources</p>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="contact-info">
+            <h4>Contact & Support</h4>
+            <p>Email: stupid@gmail.com</p>
+            <p>© 2025 Student Marketplace. All rights reserved.</p>
+        </div>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
